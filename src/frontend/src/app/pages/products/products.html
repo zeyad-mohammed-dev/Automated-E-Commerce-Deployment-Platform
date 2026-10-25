@@ -1,0 +1,60 @@
+<div class="container page">
+  <h1 class="page-title">{{ title }}</h1>
+  <p class="page-subtitle" *ngIf="!loading">{{ totalCount }} {{ totalCount === 1 ? 'product' : 'products' }}</p>
+
+  <div class="layout">
+    <aside class="filters card">
+      <h3>Filters</h3>
+
+      <div class="group">
+        <h4>Category</h4>
+        <a class="cat" [class.active]="!category" (click)="category = ''; apply()">All</a>
+        <a class="cat" *ngFor="let item of categories" [class.active]="category === item.slug" (click)="category = item.slug; apply()">{{ item.name }}</a>
+      </div>
+
+      <div class="group">
+        <h4>Price (EGP)</h4>
+        <div class="row">
+          <input class="input" type="number" min="0" placeholder="Min" [(ngModel)]="minPrice" name="min">
+          <input class="input" type="number" min="0" placeholder="Max" [(ngModel)]="maxPrice" name="max">
+        </div>
+        <button class="btn btn-sm btn-outline apply" (click)="apply()">Apply</button>
+      </div>
+
+      <div class="group">
+        <label class="check"><input type="checkbox" [(ngModel)]="onSale" name="sale" (change)="apply()"> On sale</label>
+        <label class="check"><input type="checkbox" [(ngModel)]="inStock" name="stock" (change)="apply()"> In stock</label>
+      </div>
+
+      <button class="btn btn-sm btn-ghost btn-block" (click)="clear()">Clear all</button>
+    </aside>
+
+    <section>
+      <div class="toolbar">
+        <label for="sort" class="muted">Sort by</label>
+        <select id="sort" class="input" [(ngModel)]="sort" (change)="apply()" name="sort">
+          <option *ngFor="let option of sorts" [value]="option.value" [disabled]="option.value === '' && !q">{{ option.label }}</option>
+        </select>
+      </div>
+
+      <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="spinner" *ngIf="loading"></div>
+
+      <div class="grid-products" *ngIf="!loading && products.length">
+        <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
+      </div>
+
+      <div class="empty" *ngIf="!loading && !products.length && !errorMessage">
+        <h3>No products found</h3>
+        <p>Try another search or clear the filters.</p>
+        <button class="btn btn-outline" style="margin-top: 16px" (click)="clear()">Clear filters</button>
+      </div>
+
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="goTo(page - 1)" [disabled]="page === 1">&lsaquo;</button>
+        <button *ngFor="let p of pages" [class.active]="p === page" (click)="goTo(p)">{{ p }}</button>
+        <button (click)="goTo(page + 1)" [disabled]="page === totalPages">&rsaquo;</button>
+      </div>
+    </section>
+  </div>
+</div>

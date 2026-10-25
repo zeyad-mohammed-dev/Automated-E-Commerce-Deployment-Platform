@@ -1,0 +1,39 @@
+<div class="container page">
+  <div class="box">
+    <h1 class="page-title">Track your order</h1>
+    <p class="page-subtitle">Enter your order number or tracking id and the email you used.</p>
+
+    <form class="card" (ngSubmit)="track()">
+      <div class="field"><label>Order number or tracking id</label><input class="input" name="code" [(ngModel)]="code" required></div>
+      <div class="field"><label>Email</label><input class="input" type="email" name="email" [(ngModel)]="email" required></div>
+      <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <button class="btn btn-block" type="submit" [disabled]="loading">{{ loading ? 'Searching...' : 'Track' }}</button>
+    </form>
+
+    <div class="card result" *ngIf="order">
+      <div class="top">
+        <div><span class="muted">Order</span><b class="mono">{{ order.orderId }}</b></div>
+        <span class="badge" [ngClass]="'badge-' + order.status">{{ order.status }}</span>
+      </div>
+
+      <div class="steps" *ngIf="order.status !== 'cancelled'">
+        <div class="step" *ngFor="let step of steps; let i = index" [class.done]="i <= stepIndex(order.status)">
+          <span class="dot">{{ i <= stepIndex(order.status) ? '✓' : i + 1 }}</span>
+          <span class="label">{{ step }}</span>
+        </div>
+      </div>
+
+      <div class="item" *ngFor="let item of order.items">
+        <img [src]="imageOf(item.picture)" alt="">
+        <span class="name">{{ item.name || 'Product' }} <span class="muted">x{{ item.quantity }}</span></span>
+        <span class="price" *ngIf="item.lineTotal !== null">{{ item.lineTotal | money: order.currency }}</span>
+      </div>
+      <div class="sum"><span>Total</span><b>{{ order.total | money: order.currency }}</b></div>
+
+      <h4>History</h4>
+      <ul class="history">
+        <li *ngFor="let entry of order.history"><b>{{ entry.status }}</b> <span class="muted">{{ entry.createdAt | date: 'medium' }}</span> <span *ngIf="entry.note">- {{ entry.note }}</span></li>
+      </ul>
+    </div>
+  </div>
+</div>

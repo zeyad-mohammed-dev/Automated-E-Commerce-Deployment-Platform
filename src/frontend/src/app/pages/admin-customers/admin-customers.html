@@ -1,0 +1,39 @@
+<h1 class="page-title">Customers</h1>
+<p class="page-subtitle">{{ totalCount }} accounts</p>
+
+<div class="filters">
+  <input class="input" type="search" placeholder="Search by name or email" [(ngModel)]="q" (keyup.enter)="search()" name="q">
+  <select class="input" [(ngModel)]="role" (change)="search()" name="role">
+    <option value="">All roles</option>
+    <option value="user">Customers</option>
+    <option value="admin">Admins</option>
+  </select>
+  <button class="btn btn-ghost" (click)="search()">Search</button>
+</div>
+
+<div class="spinner" *ngIf="loading"></div>
+
+<div class="table-wrap" *ngIf="!loading && users.length">
+  <table class="table">
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td><b>{{ user.name }}</b></td>
+        <td>{{ user.email }}<span class="muted" *ngIf="!user.isConfirmed"> (not confirmed)</span></td>
+        <td>{{ user.phone || '-' }}</td>
+        <td><span class="badge" [ngClass]="user.role === 'admin' ? 'badge-admin' : ''">{{ user.role }}</span></td>
+        <td><span class="badge" [ngClass]="user.isBanned ? 'badge-banned' : 'badge-active'">{{ user.isBanned ? 'suspended' : 'active' }}</span></td>
+        <td>{{ user.createdAt | date: 'mediumDate' }}</td>
+        <td class="actions"><button *ngIf="user.role !== 'admin'" class="btn btn-sm" [class.btn-danger]="!user.isBanned" [class.btn-outline]="user.isBanned" (click)="toggleBan(user)">{{ user.isBanned ? 'Activate' : 'Suspend' }}</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="empty" *ngIf="!loading && !users.length"><h3>No accounts found</h3></div>
+
+<div class="pagination" *ngIf="totalPages > 1">
+  <button (click)="goTo(page - 1)" [disabled]="page === 1">&lsaquo;</button>
+  <button class="active">{{ page }} / {{ totalPages }}</button>
+  <button (click)="goTo(page + 1)" [disabled]="page === totalPages">&rsaquo;</button>
+</div>

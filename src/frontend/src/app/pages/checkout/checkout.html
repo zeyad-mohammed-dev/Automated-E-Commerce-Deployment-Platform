@@ -1,0 +1,43 @@
+<div class="container page">
+  <h1 class="page-title">Checkout</h1>
+  <div class="spinner" *ngIf="loading"></div>
+
+  <div class="layout" *ngIf="cart && cart.items.length">
+    <form class="card" (ngSubmit)="pay()" #checkoutForm="ngForm">
+      <h3>Delivery details</h3>
+      <div class="row">
+        <div class="field"><label>Full name</label><input class="input" name="name" [(ngModel)]="form.customerName" required></div>
+        <div class="field"><label>Phone</label><input class="input" name="phone" [(ngModel)]="form.customerPhone" placeholder="01xxxxxxxxx" required></div>
+      </div>
+      <div class="field"><label>Street address</label><input class="input" name="street" [(ngModel)]="form.streetAddress" (blur)="updateShipping()" required></div>
+      <div class="row">
+        <div class="field"><label>City</label><input class="input" name="city" [(ngModel)]="form.city" (blur)="updateShipping()" required></div>
+        <div class="field"><label>State / Governorate</label><input class="input" name="state" [(ngModel)]="form.state" (blur)="updateShipping()"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Country</label><input class="input" name="country" [(ngModel)]="form.country" (blur)="updateShipping()" required></div>
+        <div class="field"><label>Postal code</label><input class="input" name="zip" [(ngModel)]="form.zipCode" (blur)="updateShipping()"></div>
+      </div>
+
+      <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <p class="hint">You will pay on the next page. We only create your order after the payment is confirmed.</p>
+      <button class="btn btn-block" type="submit" [disabled]="paying || !quote">{{ paying ? 'Redirecting...' : 'Pay ' }}<span *ngIf="!paying && quote">{{ quote.total | money }}</span></button>
+      <p class="hint" *ngIf="!quote && !quoting">Fill in the address to see the shipping cost.</p>
+    </form>
+
+    <aside class="summary card">
+      <h3>Your order</h3>
+      <div class="item" *ngFor="let item of cart.items">
+        <img [src]="imageOf(item.image)" alt="">
+        <div class="meta"><span class="name">{{ item.name }}</span><span class="muted">Qty {{ item.quantity }}</span></div>
+        <span class="price">{{ item.lineTotal | money }}</span>
+      </div>
+      <hr>
+      <div class="sum"><span>Subtotal</span><b>{{ cart.subtotal | money }}</b></div>
+      <div class="sum"><span>Shipping</span><b *ngIf="quote">{{ quote.shipping | money }}</b><span class="muted" *ngIf="!quote">{{ quoting ? 'Calculating...' : '-' }}</span></div>
+      <hr>
+      <div class="sum big"><span>Total</span><b *ngIf="quote">{{ quote.total | money }}</b><b *ngIf="!quote">-</b></div>
+      <a class="link" routerLink="/cart">Edit cart</a>
+    </aside>
+  </div>
+</div>

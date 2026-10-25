@@ -1,0 +1,47 @@
+<div class="container page">
+  <div class="box card">
+    <ng-container [ngSwitch]="status">
+      <div *ngSwitchCase="'checking'">
+        <div class="spinner"></div>
+        <h2>Confirming your payment</h2>
+        <p class="muted">This takes a few seconds. Please do not close this page.</p>
+      </div>
+
+      <div *ngSwitchCase="'completed'">
+        <div class="mark ok">&#10003;</div>
+        <h2>Thank you! Your order is placed</h2>
+        <p class="muted">We sent the details to your email.</p>
+        <div class="details" *ngIf="order">
+          <div><span class="muted">Order number</span><b class="mono">{{ order.orderId }}</b></div>
+          <div><span class="muted">Tracking id</span><b class="mono">{{ order.trackingId }}</b></div>
+          <div><span class="muted">Total paid</span><b>{{ order.total | money: order.currency }}</b></div>
+        </div>
+        <a class="btn" routerLink="/account/orders">View my orders</a>
+        <a class="btn btn-ghost" routerLink="/products" style="margin-left: 8px">Keep shopping</a>
+      </div>
+
+      <div *ngSwitchCase="'cancelled'">
+        <div class="mark no">&times;</div>
+        <h2>Payment cancelled</h2>
+        <p class="muted">No money was taken. Your cart is still saved.</p>
+        <a class="btn" routerLink="/checkout">Try again</a>
+      </div>
+
+      <div *ngSwitchCase="'failed'">
+        <div class="mark no">&times;</div>
+        <h2>We could not finish your order</h2>
+        <p class="muted">{{ message }}</p>
+        <button class="btn" (click)="again()">Check again</button>
+        <a class="btn btn-ghost" routerLink="/cart" style="margin-left: 8px">Back to cart</a>
+      </div>
+
+      <div *ngSwitchCase="'timeout'">
+        <div class="mark wait">&hellip;</div>
+        <h2>Still waiting for the bank</h2>
+        <p class="muted">If you paid, your order will appear in "My orders" in a moment.</p>
+        <button class="btn" (click)="again()">Check again</button>
+        <a class="btn btn-ghost" routerLink="/account/orders" style="margin-left: 8px">My orders</a>
+      </div>
+    </ng-container>
+  </div>
+</div>

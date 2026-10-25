@@ -1,0 +1,23 @@
+<div class="container page">
+  <form class="auth card" (ngSubmit)="confirm()">
+    <img class="logo" src="assets/logo.png" alt="Shopora">
+    <h1>Check your email</h1>
+    <p class="muted" style="margin-bottom: 20px">We sent a 6 digit code to <b>{{ email }}</b>. It works for 10 minutes.</p>
+
+    <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="field" *ngIf="!email"><label>Email</label><input class="input" type="email" name="email" [(ngModel)]="email" required></div>
+    <div class="field">
+      <label>Code</label>
+      <input class="input code" name="otp" [(ngModel)]="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="000000" required>
+    </div>
+
+    <button class="btn btn-block" type="submit" [disabled]="loading || otp.length < 6">{{ loading ? 'Confirming...' : 'Confirm email' }}</button>
+    <p class="foot muted">
+      Did not get it?
+      <a class="link" *ngIf="cooldown <= 0" (click)="resend()">Send a new code</a>
+      <span *ngIf="cooldown > 0">You can ask again in {{ cooldown }}s</span>
+    </p>
+    <p class="foot"><a class="link" routerLink="/login">Back to log in</a></p>
+  </form>
+</div>

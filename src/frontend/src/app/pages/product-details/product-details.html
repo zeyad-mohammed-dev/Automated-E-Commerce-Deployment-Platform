@@ -1,0 +1,59 @@
+<div class="container page">
+  <div class="spinner" *ngIf="loading"></div>
+
+  <div class="empty" *ngIf="notFound">
+    <h3>Product not found</h3>
+    <p>It may have been removed.</p>
+    <a class="btn" routerLink="/products" style="margin-top: 16px">Browse products</a>
+  </div>
+
+  <ng-container *ngIf="product && !loading">
+    <nav class="crumbs muted">
+      <a routerLink="/">Home</a> / <a routerLink="/products">Products</a>
+      <ng-container *ngIf="product.category"> / <a routerLink="/products" [queryParams]="{ category: product.category.slug }">{{ product.category.name }}</a></ng-container>
+    </nav>
+
+    <div class="layout">
+      <div class="gallery">
+        <div class="main"><img [src]="imageOf(product.images[selectedImage])" [alt]="product.name"></div>
+        <div class="thumbs" *ngIf="product.images.length > 1">
+          <img *ngFor="let image of product.images; let i = index" [src]="image" [class.active]="i === selectedImage" (click)="selectedImage = i" alt="">
+        </div>
+      </div>
+
+      <div class="info">
+        <p class="muted brand" *ngIf="product.brand">{{ product.brand }}</p>
+        <h1>{{ product.name }}</h1>
+        <div class="rating" *ngIf="product.reviewCount > 0"><span class="star">★</span> {{ product.rating | number: '1.1-1' }} <span class="muted">({{ product.reviewCount }} reviews)</span></div>
+
+        <div class="prices">
+          <span class="now">{{ product.finalPrice | money }}</span>
+          <span class="price-old" *ngIf="product.discountPercent > 0">{{ product.price | money }}</span>
+          <span class="off" *ngIf="product.discountPercent > 0">-{{ product.discountPercent }}%</span>
+        </div>
+
+        <p class="stock ok" *ngIf="product.stockQuantity > 5">In stock</p>
+        <p class="stock low" *ngIf="product.stockQuantity > 0 && product.stockQuantity <= 5">Only {{ product.stockQuantity }} left</p>
+        <p class="stock out" *ngIf="product.stockQuantity <= 0">Sold out</p>
+
+        <p class="description" *ngIf="product.description">{{ product.description }}</p>
+
+        <div class="buy" *ngIf="product.stockQuantity > 0">
+          <div class="qty">
+            <button (click)="changeQuantity(-1)" [disabled]="quantity <= 1" aria-label="Less">&minus;</button>
+            <span>{{ quantity }}</span>
+            <button (click)="changeQuantity(1)" [disabled]="quantity >= product.stockQuantity" aria-label="More">+</button>
+          </div>
+          <button class="btn" (click)="addToCart()" [disabled]="adding">Add to cart</button>
+          <button class="btn btn-secondary" (click)="addToCart(true)" [disabled]="adding">Buy now</button>
+          <button class="btn btn-ghost heart" [class.active]="isFavorite" (click)="toggleFavorite()" aria-label="Wishlist">{{ isFavorite ? '♥' : '♡' }}</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="related" *ngIf="related.length">
+      <h2>You may also like</h2>
+      <div class="grid-products"><app-product-card *ngFor="let item of related" [product]="item"></app-product-card></div>
+    </section>
+  </ng-container>
+</div>

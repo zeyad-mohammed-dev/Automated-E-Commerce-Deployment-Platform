@@ -1,0 +1,8 @@
+.box { max-width: 520px; margin: 24px auto; text-align: center; padding: 36px; }
+.box h2 { margin: 12px 0 6px; }
+.mark { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 38px; color: #fff; }
+.mark.ok { background: var(--success); } .mark.no { background: var(--danger); } .mark.wait { background: var(--secondary); }
+.details { margin: 22px 0; text-align: left; background: var(--light); border-radius: 12px; padding: 8px 16px; }
+.details div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--gray); }
+.details div:last-child { border-bottom: none; }
+.mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; word-break: break-all; }

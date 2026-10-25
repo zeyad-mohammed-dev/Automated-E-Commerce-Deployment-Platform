@@ -1,0 +1,49 @@
+<div class="spinner" *ngIf="loading"></div>
+
+<div class="empty" *ngIf="!loading && !orders.length">
+  <h3>No orders yet</h3>
+  <p>When you place an order it will show up here.</p>
+  <a class="btn" routerLink="/products" style="margin-top: 16px">Start shopping</a>
+</div>
+
+<div class="list" *ngIf="!loading && orders.length">
+  <div class="order card" *ngFor="let order of orders">
+    <div class="head" (click)="toggle(order)">
+      <div>
+        <b class="mono">#{{ order.orderId.slice(0, 8) }}</b>
+        <span class="muted"> &middot; {{ order.createdAt | date: 'mediumDate' }}</span>
+      </div>
+      <div class="right">
+        <span class="badge" [ngClass]="'badge-' + order.status">{{ order.status }}</span>
+        <b>{{ order.total | money: order.currency }}</b>
+        <span class="chev">{{ openId === order.orderId ? '▴' : '▾' }}</span>
+      </div>
+    </div>
+
+    <div class="thumbs" *ngIf="openId !== order.orderId">
+      <img *ngFor="let item of order.items.slice(0, 5)" [src]="imageOf(item.picture)" alt="">
+    </div>
+
+    <div class="more" *ngIf="openId === order.orderId">
+      <div class="spinner" *ngIf="!details[order.orderId]"></div>
+      <ng-container *ngIf="details[order.orderId] as full">
+        <div class="item" *ngFor="let item of full.items">
+          <img [src]="imageOf(item.picture)" alt="">
+          <span class="name">{{ item.name || 'Product' }} <span class="muted">x{{ item.quantity }}</span></span>
+          <span *ngIf="item.lineTotal !== null">{{ item.lineTotal | money: full.currency }}</span>
+        </div>
+        <p class="muted line" *ngIf="full.shippingAddress">Ships to: {{ full.shippingAddress.streetAddress }}, {{ full.shippingAddress.city }}, {{ full.shippingAddress.country }}</p>
+        <p class="muted line">Tracking id: <span class="mono">{{ full.trackingId }}</span></p>
+        <ul class="history">
+          <li *ngFor="let entry of full.history"><b>{{ entry.status }}</b> <span class="muted">{{ entry.createdAt | date: 'medium' }}</span> <span *ngIf="entry.note">- {{ entry.note }}</span></li>
+        </ul>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div class="pagination" *ngIf="totalPages > 1">
+  <button (click)="goTo(page - 1)" [disabled]="page === 1">&lsaquo;</button>
+  <button class="active">{{ page }}</button>
+  <button (click)="goTo(page + 1)" [disabled]="page === totalPages">&rsaquo;</button>
+</div>

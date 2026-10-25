@@ -1,0 +1,131 @@
+/* Shopora visual identity */
+:root {
+  --primary: #6C3AFF;
+  --primary-dark: #5424de;
+  --primary-soft: #efe9ff;
+  --secondary: #FF7A00;
+  --dark: #0F172A;
+  --light: #F8FAFC;
+  --gray: #E2E8F0;
+  --text: #0F172A;
+  --muted: #64748b;
+  --danger: #ef4444;
+  --success: #16a34a;
+  --radius: 14px;
+  --shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+  --gradient: linear-gradient(135deg, #5b2bff 0%, #a63cf0 50%, #ff7a00 100%);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--light);
+  color: var(--text);
+  line-height: 1.5;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.2; }
+p { margin: 0; }
+
+.container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.page { padding: 32px 0 64px; min-height: 60vh; }
+.page-title { font-size: 30px; font-weight: 800; margin-bottom: 6px; }
+.page-subtitle { color: var(--muted); margin-bottom: 24px; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid transparent; border-radius: 999px; padding: 11px 22px;
+  font-weight: 600; font-size: 15px; background: var(--primary); color: #fff;
+  transition: background .15s, transform .05s, box-shadow .15s;
+}
+.btn:hover { background: var(--primary-dark); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-secondary { background: var(--secondary); }
+.btn-secondary:hover { background: #e06b00; }
+.btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); }
+.btn-outline:hover { background: var(--primary-soft); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--gray); }
+.btn-ghost:hover { background: var(--gray); }
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #dc2626; }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.btn-block { width: 100%; }
+
+/* forms */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field label { font-size: 13px; font-weight: 600; color: #334155; }
+.input, select.input, textarea.input {
+  width: 100%; padding: 11px 14px; border: 1px solid var(--gray); border-radius: 12px;
+  font: inherit; background: #fff; color: var(--text); outline: none;
+}
+.input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108, 58, 255, .15); }
+textarea.input { min-height: 96px; resize: vertical; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.hint { font-size: 12px; color: var(--muted); }
+
+/* cards and messages */
+.card { background: #fff; border: 1px solid var(--gray); border-radius: var(--radius); padding: 24px; }
+.alert { padding: 12px 16px; border-radius: 12px; font-size: 14px; margin-bottom: 16px; }
+.alert-error { background: #fee2e2; color: #991b1b; }
+.alert-success { background: #dcfce7; color: #166534; }
+.alert-info { background: var(--primary-soft); color: var(--primary-dark); }
+.empty {
+  text-align: center; padding: 56px 24px; color: var(--muted);
+  background: #fff; border: 1px dashed var(--gray); border-radius: var(--radius);
+}
+.empty h3 { color: var(--text); margin-bottom: 8px; }
+.spinner {
+  width: 34px; height: 34px; border: 4px solid var(--gray); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin .8s linear infinite; margin: 32px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* grids and badges */
+.grid-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--gray); color: #334155;
+}
+.badge-processing { background: #fef3c7; color: #92400e; }
+.badge-shipped { background: #dbeafe; color: #1e40af; }
+.badge-delivered { background: #dcfce7; color: #166534; }
+.badge-cancelled, .badge-failed, .badge-banned { background: #fee2e2; color: #991b1b; }
+.badge-paid, .badge-active { background: #dcfce7; color: #166534; }
+.badge-admin { background: var(--primary-soft); color: var(--primary-dark); }
+
+/* tables */
+.table-wrap { background: #fff; border: 1px solid var(--gray); border-radius: var(--radius); overflow-x: auto; }
+table.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th { text-align: left; padding: 12px 16px; background: var(--light); color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.table td { padding: 12px 16px; border-top: 1px solid var(--gray); vertical-align: middle; }
+.table tr.clickable { cursor: pointer; }
+.table tr.clickable:hover td { background: var(--light); }
+
+/* modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .55); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.modal { background: #fff; border-radius: 18px; width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto; padding: 28px; }
+.modal h2 { margin-bottom: 20px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 28px; }
+.pagination button { min-width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--gray); background: #fff; }
+.pagination button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pagination button:disabled { opacity: .45; cursor: not-allowed; }
+
+.price { font-weight: 800; }
+.price-old { color: var(--muted); text-decoration: line-through; font-weight: 400; font-size: .85em; }
+.muted { color: var(--muted); }
+.link { color: var(--primary); font-weight: 600; cursor: pointer; }
+.link:hover { text-decoration: underline; }
+
+@media (max-width: 720px) {
+  .row, .row-3 { grid-template-columns: 1fr; }
+  .container { padding: 0 16px; }
+  .page-title { font-size: 24px; }
+}

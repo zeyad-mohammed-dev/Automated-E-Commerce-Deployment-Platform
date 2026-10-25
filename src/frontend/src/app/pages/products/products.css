@@ -1,0 +1,17 @@
+.layout { display: grid; grid-template-columns: 250px 1fr; gap: 28px; align-items: start; }
+.filters { padding: 20px; position: sticky; top: 130px; }
+.filters h3 { margin-bottom: 14px; }
+.group { margin-bottom: 20px; }
+.group h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 8px; }
+.cat { display: block; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.cat:hover { background: var(--light); }
+.cat.active { background: var(--primary-soft); color: var(--primary-dark); font-weight: 700; }
+.row { gap: 8px; }
+.apply { margin-top: 10px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 4px 0; }
+.toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 16px; }
+.toolbar .input { width: auto; padding: 8px 12px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .filters { position: static; }
+}

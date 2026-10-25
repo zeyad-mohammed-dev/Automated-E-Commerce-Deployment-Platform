@@ -1,0 +1,5 @@
+<div class="toasts">
+  <div class="toast" *ngFor="let toast of toastService.toasts" [ngClass]="'toast-' + toast.type" (click)="toastService.dismiss(toast.id)">
+    {{ toast.message }}
+  </div>
+</div>

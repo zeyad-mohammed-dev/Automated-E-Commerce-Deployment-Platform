@@ -1,0 +1,22 @@
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="brand"><img src="assets/logo.png" alt="Shopora"><span>Shop<b>ora</b></span></div>
+      <p class="muted">Everything you need, delivered to your door.</p>
+    </div>
+    <div>
+      <h4>Shop</h4>
+      <a routerLink="/products">All products</a>
+      <a routerLink="/categories">Categories</a>
+      <a routerLink="/products" [queryParams]="{ onSale: 'true' }">Deals</a>
+      <a routerLink="/products" [queryParams]="{ sort: 'newest' }">New arrivals</a>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <a routerLink="/account/profile">My account</a>
+      <a routerLink="/account/orders">My orders</a>
+      <a routerLink="/track">Track order</a>
+    </div>
+  </div>
+  <div class="container copy">&copy; {{ year }} Shopora. All rights reserved.</div>
+</footer>

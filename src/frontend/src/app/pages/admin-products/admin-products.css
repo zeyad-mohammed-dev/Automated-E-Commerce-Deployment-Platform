@@ -1,0 +1,12 @@
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.filters .input { width: auto; flex: 1; min-width: 200px; }
+.cell { display: flex; align-items: center; gap: 12px; }
+.cell img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--light); }
+.actions { white-space: nowrap; text-align: right; }
+.low { color: var(--danger); font-weight: 700; }
+.pics { display: flex; gap: 10px; flex-wrap: wrap; }
+.pic { position: relative; width: 78px; height: 78px; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray); background: var(--light); }
+.pic img { width: 100%; height: 100%; object-fit: cover; }
+.pic button { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(15, 23, 42, .75); color: #fff; line-height: 1; }
+.pic.add { display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--primary); border-style: dashed; cursor: pointer; }

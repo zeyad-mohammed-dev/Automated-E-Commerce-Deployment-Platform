@@ -1,0 +1,9 @@
+<div class="spinner" *ngIf="loading"></div>
+<div class="grid-products" *ngIf="!loading && products.length">
+  <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
+</div>
+<div class="empty" *ngIf="!loading && !products.length">
+  <h3>Your wishlist is empty</h3>
+  <p>Tap the heart on a product to save it here.</p>
+  <a class="btn" routerLink="/products" style="margin-top: 16px">Browse products</a>
+</div>

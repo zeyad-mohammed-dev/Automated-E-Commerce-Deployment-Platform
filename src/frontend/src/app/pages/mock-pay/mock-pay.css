@@ -1,0 +1,4 @@
+.box { max-width: 460px; margin: 24px auto; text-align: center; }
+.test { background: var(--secondary); color: #fff; margin-bottom: 12px; }
+.box h1 { font-size: 26px; margin-bottom: 8px; }
+.amount { font-size: 38px; font-weight: 800; color: var(--primary); margin: 24px 0; }

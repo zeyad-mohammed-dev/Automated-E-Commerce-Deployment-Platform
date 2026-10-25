@@ -1,0 +1,6 @@
+.auth { max-width: 440px; margin: 24px auto; }
+.auth h1 { font-size: 28px; margin-bottom: 4px; }
+.auth .logo { width: 56px; margin-bottom: 12px; }
+.foot { text-align: center; margin-top: 16px; font-size: 14px; }
+.sep { display: flex; justify-content: space-between; font-size: 13px; margin: -6px 0 16px; }
+.code { text-align: center; font-size: 26px; letter-spacing: 10px; font-weight: 700; }

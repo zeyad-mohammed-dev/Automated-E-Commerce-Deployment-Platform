@@ -1,0 +1,52 @@
+<div class="container home">
+  <section class="hero">
+    <div class="slide" *ngFor="let slide of slides; let i = index" [class.active]="i === current" [ngClass]="'theme-' + slide.theme">
+      <div class="content">
+        <h1>{{ slide.title }}<br><strong>{{ slide.strong }}</strong></h1>
+        <p>{{ slide.text }}</p>
+        <a class="btn" [routerLink]="slide.link" [queryParams]="slide.query">{{ slide.button }}</a>
+      </div>
+      <div class="art" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+    <button class="arrow left" (click)="previous()" aria-label="Previous">&#8249;</button>
+    <button class="arrow right" (click)="next()" aria-label="Next">&#8250;</button>
+    <div class="dots">
+      <button *ngFor="let slide of slides; let i = index" [class.active]="i === current" (click)="go(i)" [attr.aria-label]="'Slide ' + (i + 1)"></button>
+    </div>
+  </section>
+
+  <section class="categories" *ngIf="categories.length">
+    <a class="category" *ngFor="let category of categories" routerLink="/products" [queryParams]="{ category: category.slug }">
+      <div class="picture"><img [src]="imageOf(category.image)" [alt]="category.name" loading="lazy"></div>
+      <h3>{{ category.name }}</h3>
+    </a>
+  </section>
+
+  <div class="spinner" *ngIf="loading"></div>
+
+  <section *ngIf="trending.length">
+    <div class="head"><h2>Trending Products</h2><a class="link" routerLink="/products" [queryParams]="{ sort: 'bestSelling' }">View All &rarr;</a></div>
+    <div class="grid-products"><app-product-card *ngFor="let product of trending" [product]="product"></app-product-card></div>
+  </section>
+
+  <section *ngIf="deals.length">
+    <div class="head"><h2>Deals</h2><a class="link" routerLink="/products" [queryParams]="{ onSale: 'true' }">View All &rarr;</a></div>
+    <div class="grid-products"><app-product-card *ngFor="let product of deals" [product]="product"></app-product-card></div>
+  </section>
+
+  <section *ngIf="newArrivals.length">
+    <div class="head"><h2>New Arrivals</h2><a class="link" routerLink="/products" [queryParams]="{ sort: 'newest' }">View All &rarr;</a></div>
+    <div class="grid-products"><app-product-card *ngFor="let product of newArrivals" [product]="product"></app-product-card></div>
+  </section>
+
+  <div class="empty" *ngIf="!loading && !trending.length">
+    <h3>The store is getting ready</h3>
+    <p>There are no products yet. Please come back soon.</p>
+  </div>
+
+  <section class="perks">
+    <div><b>Secure checkout</b><span>Pay safely online</span></div>
+    <div><b>Track your order</b><span>Know where your package is</span></div>
+    <div><b>Easy shopping</b><span>Search, compare and save favorites</span></div>
+  </section>
+</div>

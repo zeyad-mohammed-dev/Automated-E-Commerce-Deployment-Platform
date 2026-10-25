@@ -1,0 +1,18 @@
+<div class="container page">
+  <h1 class="page-title">Categories</h1>
+  <p class="page-subtitle">Pick a category to start shopping.</p>
+
+  <div class="spinner" *ngIf="loading"></div>
+
+  <div class="grid" *ngIf="!loading && categories.length">
+    <a class="category" *ngFor="let category of categories" routerLink="/products" [queryParams]="{ category: category.slug }">
+      <img [src]="imageOf(category.image)" [alt]="category.name" loading="lazy">
+      <div class="label">{{ category.name }}</div>
+    </a>
+  </div>
+
+  <div class="empty" *ngIf="!loading && !categories.length">
+    <h3>No categories yet</h3>
+    <p>Categories will appear here as soon as they are added.</p>
+  </div>
+</div>

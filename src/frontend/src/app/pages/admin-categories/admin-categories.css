@@ -1,0 +1,8 @@
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.cat { padding: 14px; }
+.cat img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; background: var(--light); margin-bottom: 12px; }
+.cat p { font-size: 13px; margin-bottom: 12px; }
+.buttons { display: flex; gap: 8px; }
+.small { max-width: 460px; }
+.preview { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; background: var(--light); }

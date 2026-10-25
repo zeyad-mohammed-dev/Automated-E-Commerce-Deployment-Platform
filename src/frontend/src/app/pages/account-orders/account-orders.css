@@ -1,0 +1,13 @@
+.list { display: flex; flex-direction: column; gap: 14px; }
+.head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 12px; flex-wrap: wrap; }
+.right { display: flex; align-items: center; gap: 14px; }
+.mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+.thumbs { display: flex; gap: 8px; margin-top: 12px; }
+.thumbs img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; background: var(--light); }
+.more { margin-top: 16px; border-top: 1px solid var(--gray); padding-top: 12px; }
+.item { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 6px 0; }
+.item img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--light); }
+.line { font-size: 14px; margin-top: 8px; }
+.history { list-style: none; padding: 0; margin: 12px 0 0; font-size: 14px; }
+.history li { padding: 3px 0; text-transform: capitalize; }
+.history span { text-transform: none; }

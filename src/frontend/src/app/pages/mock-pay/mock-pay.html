@@ -1,0 +1,17 @@
+<div class="container page">
+  <div class="box card">
+    <span class="badge test">TEST PAYMENT</span>
+    <h1>Complete your payment</h1>
+    <p class="muted">This is a practice payment page. No card is needed and no money moves.</p>
+
+    <div class="spinner" *ngIf="loading"></div>
+    <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <ng-container *ngIf="payment && !loading">
+      <div class="amount">{{ payment.amount | money: payment.currency }}</div>
+      <p class="muted" *ngIf="payment.status !== 'pending'">This payment is already {{ payment.status }}.</p>
+      <button class="btn btn-block" (click)="pay()" [disabled]="paying || payment.status !== 'pending'">{{ paying ? 'Paying...' : 'Pay now (test)' }}</button>
+      <button class="btn btn-ghost btn-block" (click)="cancel()" [disabled]="paying" style="margin-top: 10px">Cancel</button>
+    </ng-container>
+  </div>
+</div>

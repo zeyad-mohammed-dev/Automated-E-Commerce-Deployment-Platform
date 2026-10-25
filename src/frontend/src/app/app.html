@@ -1,0 +1,6 @@
+<app-navbar *ngIf="!isAdminArea"></app-navbar>
+<main>
+  <router-outlet></router-outlet>
+</main>
+<app-footer *ngIf="!isAdminArea"></app-footer>
+<app-toast></app-toast>

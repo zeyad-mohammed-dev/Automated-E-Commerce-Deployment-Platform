@@ -1,0 +1,24 @@
+<a class="card-link" [routerLink]="['/products', productId]">
+  <div class="image">
+    <img [src]="imageOf(product.images?.[0])" [alt]="product.name" loading="lazy">
+    <span class="discount" *ngIf="product.discountPercent > 0">-{{ product.discountPercent }}%</span>
+    <span class="sold-out" *ngIf="product.stockQuantity <= 0">Sold out</span>
+    <button class="heart" [class.active]="isFavorite" (click)="toggleFavorite($event)" aria-label="Add to wishlist">
+      {{ isFavorite ? '♥' : '♡' }}
+    </button>
+  </div>
+  <div class="info">
+    <h3>{{ product.name }}</h3>
+    <p class="muted category">{{ product.category?.name || product.brand }}</p>
+    <div class="prices">
+      <span class="price">{{ product.finalPrice | money }}</span>
+      <span class="price-old" *ngIf="product.discountPercent > 0">{{ product.price | money }}</span>
+    </div>
+    <div class="rating" *ngIf="product.reviewCount > 0">
+      <span class="star">★</span> {{ product.rating | number: '1.1-1' }} <span class="muted">({{ product.reviewCount }})</span>
+    </div>
+  </div>
+</a>
+<button class="btn btn-sm btn-block add" [disabled]="adding || product.stockQuantity <= 0" (click)="addToCart($event)">
+  {{ product.stockQuantity <= 0 ? 'Sold out' : adding ? 'Adding...' : 'Add to cart' }}
+</button>

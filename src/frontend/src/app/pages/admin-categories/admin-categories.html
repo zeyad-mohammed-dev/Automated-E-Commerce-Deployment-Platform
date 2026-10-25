@@ -1,0 +1,37 @@
+<div class="head">
+  <div><h1 class="page-title">Categories</h1><p class="page-subtitle">Group your products so customers can find them.</p></div>
+  <button class="btn" (click)="openCreate()">+ Add category</button>
+</div>
+
+<div class="spinner" *ngIf="loading"></div>
+
+<div class="grid" *ngIf="!loading && categories.length">
+  <div class="card cat" *ngFor="let category of categories">
+    <img [src]="imageOf(category.image)" alt="">
+    <h3>{{ category.name }}</h3>
+    <p class="muted">/{{ category.slug }}</p>
+    <div class="buttons"><button class="btn btn-sm btn-ghost" (click)="openEdit(category)">Edit</button><button class="btn btn-sm btn-danger" (click)="remove(category)">Delete</button></div>
+  </div>
+</div>
+
+<div class="empty" *ngIf="!loading && !categories.length">
+  <h3>No categories yet</h3>
+  <p>Add a category, then add products inside it.</p>
+</div>
+
+<div class="modal-backdrop" *ngIf="modalOpen" (click)="close()">
+  <form class="modal small" (click)="$event.stopPropagation()" (ngSubmit)="save()">
+    <h2>{{ editingId ? 'Edit category' : 'Add category' }}</h2>
+    <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="field"><label>Name *</label><input class="input" name="name" [(ngModel)]="name" required></div>
+    <div class="field">
+      <label>Picture</label>
+      <img class="preview" [src]="imageOf(preview || currentImage)" alt="">
+      <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" (change)="pickFile($event)">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" (click)="close()">Cancel</button>
+      <button class="btn" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,16 @@
+<div class="container page">
+  <h1 class="page-title">My account</h1>
+  <p class="page-subtitle" *ngIf="authService.user$ | async as user">{{ user.name }} &middot; {{ user.email }}</p>
+
+  <div class="layout">
+    <nav class="side card">
+      <a routerLink="profile" routerLinkActive="active">Profile</a>
+      <a routerLink="orders" routerLinkActive="active">My orders</a>
+      <a routerLink="wishlist" routerLinkActive="active">Wishlist</a>
+      <a routerLink="security" routerLinkActive="active">Password</a>
+      <a routerLink="/admin" *ngIf="authService.isAdmin()">Dashboard</a>
+      <a class="out" (click)="logout()">Log out</a>
+    </nav>
+    <section><router-outlet></router-outlet></section>
+  </div>
+</div>

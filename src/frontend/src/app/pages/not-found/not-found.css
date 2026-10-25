@@ -1,0 +1,4 @@
+.missing { text-align: center; padding-top: 80px; }
+.missing h1 { font-size: 96px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.missing h2 { margin: 8px 0; }
+.missing .btn { margin-top: 24px; }

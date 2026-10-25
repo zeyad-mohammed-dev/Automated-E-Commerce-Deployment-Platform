@@ -1,0 +1,64 @@
+<header class="navbar">
+  <div class="container top">
+    <a routerLink="/" class="brand">
+      <img src="assets/logo.png" alt="Shopora logo">
+      <span>Shop<b>ora</b></span>
+    </a>
+
+    <form class="search" (ngSubmit)="submitSearch()">
+      <input class="input" name="search" type="search" autocomplete="off" placeholder="Search for products, brands and more..."
+             [(ngModel)]="search" (input)="onType()" (focus)="showSuggestions = suggestions.length > 0">
+      <button type="submit" aria-label="Search">&#128269;</button>
+
+      <div class="suggestions" *ngIf="showSuggestions">
+        <a *ngFor="let item of suggestions" (click)="openSuggestion(item)">
+          <img [src]="imageOf(item.image)" alt="">
+          <span class="name">{{ item.name }}</span>
+          <span class="price">{{ item.finalPrice | money }}</span>
+        </a>
+      </div>
+    </form>
+
+    <div class="icons">
+      <a routerLink="/account/wishlist" class="icon" aria-label="Wishlist" title="Wishlist">
+        &#9825;
+        <span class="count" *ngIf="(wishlistService.ids$ | async)?.length">{{ (wishlistService.ids$ | async)?.length }}</span>
+      </a>
+      <a routerLink="/cart" class="icon" aria-label="Cart" title="Cart">
+        &#128722;
+        <span class="count" *ngIf="(cartService.count$ | async) as count">{{ count }}</span>
+      </a>
+
+      <div class="account">
+        <button class="icon" (click)="menuOpen = !menuOpen" aria-label="Account" title="Account">&#128100;</button>
+        <div class="menu" *ngIf="menuOpen" (click)="menuOpen = false">
+          <ng-container *ngIf="authService.user$ | async as user; else guestMenu">
+            <div class="who">
+              <b>{{ user.name }}</b>
+              <span class="muted">{{ user.email }}</span>
+            </div>
+            <a routerLink="/account/profile">My account</a>
+            <a routerLink="/account/orders">My orders</a>
+            <a routerLink="/account/wishlist">Wishlist</a>
+            <a routerLink="/admin" *ngIf="user.role === 'admin'">Dashboard</a>
+            <a class="logout" (click)="logout()">Log out</a>
+          </ng-container>
+          <ng-template #guestMenu>
+            <a routerLink="/login">Log in</a>
+            <a routerLink="/register">Create account</a>
+          </ng-template>
+        </div>
+      </div>
+
+      <button class="burger" (click)="mobileOpen = !mobileOpen" aria-label="Menu">&#9776;</button>
+    </div>
+  </div>
+
+  <nav class="links container" [class.open]="mobileOpen" (click)="mobileOpen = false">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/categories" routerLinkActive="active">Categories</a>
+    <a routerLink="/products" [queryParams]="{ onSale: 'true' }">Deals</a>
+    <a routerLink="/products" [queryParams]="{ sort: 'newest' }">New Arrivals</a>
+    <a routerLink="/track" routerLinkActive="active">Track Order</a>
+  </nav>
+</header>

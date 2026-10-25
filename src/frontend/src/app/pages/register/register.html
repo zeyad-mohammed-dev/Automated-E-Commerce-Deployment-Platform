@@ -1,0 +1,22 @@
+<div class="container page">
+  <form class="auth card" (ngSubmit)="register()">
+    <img class="logo" src="assets/logo.png" alt="Shopora">
+    <h1>Create your account</h1>
+    <p class="muted" style="margin-bottom: 20px">We will send a code to your email to confirm it.</p>
+
+    <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="field"><label>Full name</label><input class="input" name="name" [(ngModel)]="form.name" autocomplete="name" required></div>
+    <div class="field"><label>Email</label><input class="input" type="email" name="email" [(ngModel)]="form.email" autocomplete="email" required></div>
+    <div class="field"><label>Phone (optional)</label><input class="input" name="phone" [(ngModel)]="form.phone" placeholder="01xxxxxxxxx"></div>
+    <div class="field">
+      <label>Password</label>
+      <input class="input" type="password" name="password" [(ngModel)]="form.password" autocomplete="new-password" required>
+      <span class="hint">At least 8 characters, with a letter and a number.</span>
+    </div>
+    <div class="field"><label>Confirm password</label><input class="input" type="password" name="confirm" [(ngModel)]="form.confirmPassword" autocomplete="new-password" required></div>
+
+    <button class="btn btn-block" type="submit" [disabled]="loading">{{ loading ? 'Creating...' : 'Create account' }}</button>
+    <p class="foot muted">Already have an account? <a class="link" routerLink="/login">Log in</a></p>
+  </form>
+</div>

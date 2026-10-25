@@ -1,0 +1,88 @@
+<div class="head">
+  <div><h1 class="page-title">Products</h1><p class="page-subtitle">{{ totalCount }} in the store</p></div>
+  <button class="btn" (click)="openCreate()" [disabled]="!categories.length">+ Add product</button>
+</div>
+
+<div class="alert alert-info" *ngIf="!categories.length">Create a category first, then you can add products. <a class="link" routerLink="/admin/categories">Go to categories</a></div>
+
+<div class="filters">
+  <input class="input" type="search" placeholder="Search by name or brand" [(ngModel)]="q" (keyup.enter)="search()" name="q">
+  <select class="input" [(ngModel)]="categoryFilter" (change)="search()" name="cat">
+    <option value="">All categories</option>
+    <option *ngFor="let category of categories" [value]="category.slug">{{ category.name }}</option>
+  </select>
+  <button class="btn btn-ghost" (click)="search()">Search</button>
+</div>
+
+<div class="spinner" *ngIf="loading"></div>
+
+<div class="table-wrap" *ngIf="!loading && products.length">
+  <table class="table">
+    <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Discount</th><th>Stock</th><th>Sold</th><th></th></tr></thead>
+    <tbody>
+      <tr *ngFor="let product of products">
+        <td><div class="cell"><img [src]="imageOf(product.images[0])" alt=""><div><b>{{ product.name }}</b><br><span class="muted">{{ product.brand }}</span></div></div></td>
+        <td>{{ product.category?.name }}</td>
+        <td>{{ product.finalPrice | money }}</td>
+        <td><span *ngIf="product.discountPercent > 0">-{{ product.discountPercent }}%</span><span class="muted" *ngIf="!product.discountPercent">-</span></td>
+        <td><span [class.low]="product.stockQuantity <= 5">{{ product.stockQuantity }}</span></td>
+        <td>{{ product.soldCount }}</td>
+        <td class="actions"><button class="btn btn-sm btn-ghost" (click)="openEdit(product)">Edit</button> <button class="btn btn-sm btn-danger" (click)="remove(product)">Delete</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="empty" *ngIf="!loading && !products.length && categories.length">
+  <h3>No products yet</h3>
+  <p>Add your first product and it will show up in the store.</p>
+</div>
+
+<div class="pagination" *ngIf="totalPages > 1">
+  <button (click)="goTo(page - 1)" [disabled]="page === 1">&lsaquo;</button>
+  <button class="active">{{ page }} / {{ totalPages }}</button>
+  <button (click)="goTo(page + 1)" [disabled]="page === totalPages">&rsaquo;</button>
+</div>
+
+<div class="modal-backdrop" *ngIf="modalOpen" (click)="close()">
+  <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="save()">
+    <h2>{{ editingId ? 'Edit product' : 'Add product' }}</h2>
+    <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="field"><label>Name *</label><input class="input" name="name" [(ngModel)]="form.name" required></div>
+    <div class="row">
+      <div class="field"><label>Category *</label>
+        <select class="input" name="category" [(ngModel)]="form.category" required>
+          <option value="" disabled>Choose a category</option>
+          <option *ngFor="let category of categories" [value]="category._id">{{ category.name }}</option>
+        </select>
+      </div>
+      <div class="field"><label>Brand</label><input class="input" name="brand" [(ngModel)]="form.brand"></div>
+    </div>
+    <div class="row-3">
+      <div class="field"><label>Price (EGP) *</label><input class="input" type="number" min="0" step="0.01" name="price" [(ngModel)]="form.price" required></div>
+      <div class="field"><label>Discount %</label><input class="input" type="number" min="0" max="100" name="discount" [(ngModel)]="form.discountPercent"></div>
+      <div class="field"><label>Stock</label><input class="input" type="number" min="0" name="stock" [(ngModel)]="form.stockQuantity"></div>
+    </div>
+    <div class="field"><label>Description</label><textarea class="input" name="description" [(ngModel)]="form.description"></textarea></div>
+    <div class="row">
+      <div class="field"><label>Rating shown (0 to 5)</label><input class="input" type="number" min="0" max="5" step="0.1" name="rating" [(ngModel)]="form.rating"></div>
+      <div class="field"><label>Reviews shown</label><input class="input" type="number" min="0" name="reviews" [(ngModel)]="form.reviewCount"></div>
+    </div>
+
+    <div class="field">
+      <label>Pictures ({{ imageCount }}/{{ maxImages }})</label>
+      <div class="pics">
+        <div class="pic" *ngFor="let image of existingImages"><img [src]="image" alt=""><button type="button" (click)="removeExisting(image)" aria-label="Remove">&times;</button></div>
+        <div class="pic" *ngFor="let item of newFiles; let i = index"><img [src]="item.url" alt=""><button type="button" (click)="removeNew(i)" aria-label="Remove">&times;</button></div>
+        <label class="pic add" *ngIf="imageCount < maxImages">+<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple (change)="pickFiles($event)" hidden></label>
+      </div>
+      <span class="hint">JPG, PNG, WEBP or GIF, up to 5 MB each. The first picture is the main one.</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" (click)="close()">Cancel</button>
+      <button class="btn" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save product' }}</button>
+    </div>
+  </form>
+</div>

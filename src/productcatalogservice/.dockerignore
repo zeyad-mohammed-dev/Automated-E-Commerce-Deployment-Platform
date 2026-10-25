@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+**/.env
+**/.env.dev
+uploads
+tests
+Dockerfile
+.dockerignore
+nodemon.json

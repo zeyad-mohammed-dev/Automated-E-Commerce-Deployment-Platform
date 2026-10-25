@@ -1,0 +1,50 @@
+<div class="container page">
+  <h1 class="page-title">Your cart</h1>
+
+  <div class="spinner" *ngIf="loading"></div>
+
+  <div class="empty" *ngIf="!loading && (!cart || !cart.items.length)">
+    <h3>Your cart is empty</h3>
+    <p>Add something you like and it will show up here.</p>
+    <a class="btn" routerLink="/products" style="margin-top: 16px">Start shopping</a>
+  </div>
+
+  <div class="layout" *ngIf="cart && cart.items.length">
+    <div class="lines">
+      <div class="line card" *ngFor="let item of cart.items" [class.faded]="busyId === item.productId">
+        <img [src]="imageOf(item.image)" [alt]="item.name || 'Product'">
+        <div class="details">
+          <ng-container *ngIf="item.available; else gone">
+            <a class="name" [routerLink]="['/products', item.productId]">{{ item.name }}</a>
+            <div class="unit">
+              <span class="price">{{ item.finalPrice | money }}</span>
+              <span class="price-old" *ngIf="item.discountPercent && item.discountPercent > 0">{{ item.price | money }}</span>
+            </div>
+            <p class="warn" *ngIf="!item.inStock">Only {{ item.stockQuantity }} in stock. Please lower the quantity.</p>
+          </ng-container>
+          <ng-template #gone><span class="name">This product is no longer available</span></ng-template>
+
+          <div class="actions">
+            <div class="qty" *ngIf="item.available">
+              <button (click)="change(item, -1)" aria-label="Less">&minus;</button>
+              <span>{{ item.quantity }}</span>
+              <button (click)="change(item, 1)" [disabled]="item.quantity >= (item.stockQuantity || 0)" aria-label="More">+</button>
+            </div>
+            <a class="link remove" (click)="update(item.productId, 0)">Remove</a>
+          </div>
+        </div>
+        <div class="total price" *ngIf="item.available">{{ item.lineTotal | money }}</div>
+      </div>
+    </div>
+
+    <aside class="summary card">
+      <h3>Order summary</h3>
+      <div class="sum"><span>Items ({{ cart.itemsCount }})</span><b>{{ cart.subtotal | money }}</b></div>
+      <div class="sum muted"><span>Shipping</span><span>Calculated at checkout</span></div>
+      <hr>
+      <div class="sum big"><span>Subtotal</span><b>{{ cart.subtotal | money }}</b></div>
+      <button class="btn btn-block" [disabled]="!canCheckout" (click)="checkout()">Checkout</button>
+      <a class="btn btn-ghost btn-block" routerLink="/products" style="margin-top: 10px">Continue shopping</a>
+    </aside>
+  </div>
+</div>

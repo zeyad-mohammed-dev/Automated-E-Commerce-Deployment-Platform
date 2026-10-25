@@ -1,0 +1,66 @@
+<div class="head">
+  <div>
+    <h1 class="page-title">Overview</h1>
+    <p class="page-subtitle">How the store is doing.</p>
+  </div>
+  <select class="input period" [(ngModel)]="days" (change)="load()" name="days">
+    <option [ngValue]="7">Last 7 days</option>
+    <option [ngValue]="30">Last 30 days</option>
+    <option [ngValue]="90">Last 90 days</option>
+  </select>
+</div>
+
+<div class="spinner" *ngIf="loading"></div>
+<div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+<ng-container *ngIf="stats && !loading">
+  <div class="cards">
+    <div class="card stat"><span class="muted">Revenue</span><b>{{ stats.orders.revenue | money }}</b><small class="muted">Cancelled orders not counted</small></div>
+    <div class="card stat"><span class="muted">Orders</span><b>{{ stats.orders.ordersCount }}</b><small class="muted">Average {{ stats.orders.averageOrderValue | money }}</small></div>
+    <div class="card stat"><span class="muted">Customers</span><b>{{ stats.users.total }}</b><small class="muted">{{ stats.users.newLast30Days }} new in 30 days</small></div>
+    <div class="card stat"><span class="muted">Products</span><b>{{ stats.products.total }}</b><a class="link" routerLink="/admin/products">Manage</a></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Sales per day</h3>
+      <div class="chart" *ngIf="stats.orders.revenue > 0; else noSales">
+        <div class="bar-col" *ngFor="let day of stats.orders.dailySales" [title]="day.date + ': ' + day.orders + ' orders, EGP ' + day.revenue">
+          <div class="bar" [style.height.%]="barHeight(day)"></div>
+        </div>
+      </div>
+      <div class="axis" *ngIf="stats.orders.revenue > 0"><span>{{ stats.orders.dailySales[0].date }}</span><span>{{ stats.orders.dailySales[stats.orders.dailySales.length - 1].date }}</span></div>
+      <ng-template #noSales><p class="muted nodata">No sales in this period yet.</p></ng-template>
+    </div>
+
+    <div class="card">
+      <h3>Orders by status</h3>
+      <div class="status" *ngFor="let status of statuses">
+        <div class="line"><span class="badge" [ngClass]="'badge-' + status">{{ status }}</span><b>{{ stats.orders.byStatus[status] }}</b></div>
+        <div class="track"><div class="fill" [ngClass]="'fill-' + status" [style.width.%]="share(status)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Top products</h3>
+      <p class="muted nodata" *ngIf="!stats.orders.topProducts.length">Nothing sold yet.</p>
+      <div class="top" *ngFor="let item of stats.orders.topProducts">
+        <img [src]="imageOf(item.picture)" alt="">
+        <span class="name">{{ item.name || 'Product' }}</span>
+        <span class="muted">{{ item.quantity }} sold</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="between"><h3>Recent orders</h3><a class="link" routerLink="/admin/orders">View all</a></div>
+      <p class="muted nodata" *ngIf="!stats.orders.recentOrders.length">No orders yet.</p>
+      <div class="recent" *ngFor="let order of stats.orders.recentOrders">
+        <div><b class="mono">#{{ order.orderId.slice(0, 8) }}</b><br><span class="muted">{{ order.createdAt | date: 'short' }}</span></div>
+        <span class="badge" [ngClass]="'badge-' + order.status">{{ order.status }}</span>
+        <b>{{ order.total | money: order.currency }}</b>
+      </div>
+    </div>
+  </div>
+</ng-container>

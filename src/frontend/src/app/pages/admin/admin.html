@@ -1,0 +1,26 @@
+<div class="shell">
+  <aside class="sidebar" [class.open]="menuOpen" (click)="menuOpen = false">
+    <a routerLink="/admin" class="brand"><img src="assets/logo.png" alt="Shopora"><span>Shop<b>ora</b></span></a>
+    <p class="section">Dashboard</p>
+    <nav>
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Overview</a>
+      <a routerLink="/admin/products" routerLinkActive="active">Products</a>
+      <a routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+      <a routerLink="/admin/orders" routerLinkActive="active">Orders</a>
+      <a routerLink="/admin/customers" routerLinkActive="active">Customers</a>
+    </nav>
+    <div class="bottom">
+      <a routerLink="/">View store &rarr;</a>
+      <a class="out" (click)="logout()">Log out</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <button class="burger" (click)="menuOpen = !menuOpen" aria-label="Menu">&#9776;</button>
+      <span class="muted">Signed in as</span>
+      <b *ngIf="authService.user$ | async as user">{{ user.name }}</b>
+    </header>
+    <div class="content"><router-outlet></router-outlet></div>
+  </div>
+</div>

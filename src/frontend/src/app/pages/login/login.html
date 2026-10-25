@@ -1,0 +1,19 @@
+<div class="container page">
+  <form class="auth card" (ngSubmit)="login()">
+    <img class="logo" src="assets/logo.png" alt="Shopora">
+    <h1>Welcome back</h1>
+    <p class="muted" style="margin-bottom: 20px">Log in to see your orders and wishlist.</p>
+
+    <div class="alert alert-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+      <a class="link" *ngIf="needsConfirm" (click)="confirmEmail()"> Send me a code</a>
+    </div>
+
+    <div class="field"><label>Email</label><input class="input" type="email" name="email" [(ngModel)]="email" autocomplete="email" required></div>
+    <div class="field"><label>Password</label><input class="input" type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required></div>
+    <div class="sep"><span></span><a class="link" routerLink="/forgot-password">Forgot password?</a></div>
+
+    <button class="btn btn-block" type="submit" [disabled]="loading">{{ loading ? 'Logging in...' : 'Log in' }}</button>
+    <p class="foot muted">New to Shopora? <a class="link" routerLink="/register">Create an account</a></p>
+  </form>
+</div>

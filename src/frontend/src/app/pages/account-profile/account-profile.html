@@ -1,0 +1,22 @@
+<div class="spinner" *ngIf="loading"></div>
+<form class="card" (ngSubmit)="save()" *ngIf="!loading">
+  <h3>Profile</h3>
+  <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="row">
+    <div class="field"><label>Full name</label><input class="input" name="name" [(ngModel)]="form.name" required></div>
+    <div class="field"><label>Email</label><input class="input" [value]="email" disabled></div>
+  </div>
+  <div class="field"><label>Phone</label><input class="input" name="phone" [(ngModel)]="form.phone"></div>
+
+  <h3 class="sub">Delivery address</h3>
+  <div class="field"><label>Street address</label><input class="input" name="street" [(ngModel)]="form.streetAddress"></div>
+  <div class="row">
+    <div class="field"><label>City</label><input class="input" name="city" [(ngModel)]="form.city"></div>
+    <div class="field"><label>State / Governorate</label><input class="input" name="state" [(ngModel)]="form.state"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Country</label><input class="input" name="country" [(ngModel)]="form.country"></div>
+    <div class="field"><label>Postal code</label><input class="input" name="zip" [(ngModel)]="form.zipCode"></div>
+  </div>
+  <button class="btn" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save changes' }}</button>
+</form>

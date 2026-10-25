@@ -1,0 +1,370 @@
+# Shopora: the whole store with one command
+#
+#   cp .env.example .env      (then edit .env)
+#   docker compose up -d --build
+#   open http://localhost:8080
+#
+# Only the "frontend" has a port open to your computer.
+# Everything else talks inside the private network "shopora-network".
+
+# the project name: it is the first part of container and volume names (shopora-gateway-1, shopora_mongo-data)
+name: shopora
+
+services:
+
+  # ======================= databases =======================
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: shopora
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the .env file}
+      POSTGRES_DB: orders
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopora -d orders"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ======================= new services (Node.js) =======================
+
+  authservice:
+    build: ./src/authservice
+    image: shopora/authservice:${TAG:-1.0}
+    environment:
+      PORT: 8080
+      DB_URI: mongodb://mongo:27017/shopora-auth
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the .env file}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: "${MAIL_FROM:-Shopora <no-reply@shopora.com>}"
+      ADMIN_NAME: ${ADMIN_NAME:-Admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in the .env file}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in the .env file}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  productcatalogservice:
+    build: ./src/productcatalogservice
+    image: shopora/productcatalogservice:${TAG:-1.0}
+    environment:
+      PORT: 3550
+      HTTP_PORT: 8080
+      DB_URI: mongodb://mongo:27017/shopora-catalog
+      REDIS_URL: redis://redis:6379
+      STORE_CURRENCY: EGP
+      CURRENCY_SERVICE_ADDR: currencyservice:7000
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in the .env file}
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
+      UPLOAD_DIR: /app/uploads
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-}
+      S3_PUBLIC_BASE_URL: ${S3_PUBLIC_BASE_URL:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+    volumes:
+      - uploads-data:/app/uploads
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      currencyservice:
+        condition: service_started
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  searchservice:
+    build: ./src/searchservice
+    image: shopora/searchservice:${TAG:-1.0}
+    environment:
+      PORT: 8080
+      DB_URI: mongodb://mongo:27017/shopora-search
+      REDIS_URL: redis://redis:6379
+      CATALOG_SERVICE_URL: http://productcatalogservice:8080
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in the .env file}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      productcatalogservice:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  ordersservice:
+    build: ./src/ordersservice
+    image: shopora/ordersservice:${TAG:-1.0}
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://shopora:${POSTGRES_PASSWORD}@postgres:5432/orders
+      CATALOG_SERVICE_URL: http://productcatalogservice:8080
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in the .env file}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  paymentservice:
+    build: ./src/paymentservice
+    image: shopora/paymentservice:${TAG:-1.0}
+    environment:
+      PORT: 50051
+      HTTP_PORT: 8080
+      REDIS_URL: redis://redis:6379
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in the .env file}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      FRONTEND_URL: ${PUBLIC_URL:-http://localhost:8080}
+      PAID_CALLBACK_URL: http://gateway:8080/internal/payments/paid
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  gateway:
+    build: ./src/gateway
+    image: shopora/gateway:${TAG:-1.0}
+    environment:
+      PORT: 8080
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the .env file}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:?Set INTERNAL_API_KEY in the .env file}
+      AUTH_SERVICE_URL: http://authservice:8080
+      CATALOG_SERVICE_URL: http://productcatalogservice:8080
+      SEARCH_SERVICE_URL: http://searchservice:8080
+      ORDERS_SERVICE_URL: http://ordersservice:8080
+      PAYMENT_SERVICE_URL: http://paymentservice:8080
+      CART_SERVICE_ADDR: cartservice:7070
+      CHECKOUT_SERVICE_ADDR: checkoutservice:5050
+      SHIPPING_SERVICE_ADDR: shippingservice:50051
+      CURRENCY_SERVICE_ADDR: currencyservice:7000
+      RECOMMENDATION_SERVICE_ADDR: recommendationservice:8080
+      STORE_CURRENCY: EGP
+    depends_on:
+      redis:
+        condition: service_healthy
+      authservice:
+        condition: service_healthy
+      productcatalogservice:
+        condition: service_healthy
+      searchservice:
+        condition: service_healthy
+      ordersservice:
+        condition: service_healthy
+      paymentservice:
+        condition: service_healthy
+      cartservice:
+        condition: service_started
+      checkoutservice:
+        condition: service_started
+      shippingservice:
+        condition: service_started
+      currencyservice:
+        condition: service_started
+      recommendationservice:
+        condition: service_started
+    networks:
+      - shopora-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  # ======================= original services (gRPC) =======================
+
+  cartservice:
+    build: ./src/cartservice
+    image: shopora/cartservice:${TAG:-1.0}
+    environment:
+      REDIS_ADDR: redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+  checkoutservice:
+    build: ./src/checkoutservice
+    image: shopora/checkoutservice:${TAG:-1.0}
+    environment:
+      PORT: 5050
+      PRODUCT_CATALOG_SERVICE_ADDR: productcatalogservice:3550
+      SHIPPING_SERVICE_ADDR: shippingservice:50051
+      PAYMENT_SERVICE_ADDR: paymentservice:50051
+      EMAIL_SERVICE_ADDR: emailservice:8080
+      CURRENCY_SERVICE_ADDR: currencyservice:7000
+      CART_SERVICE_ADDR: cartservice:7070
+      ORDERS_SERVICE_ADDR: ordersservice:8080
+    depends_on:
+      productcatalogservice:
+        condition: service_healthy
+      paymentservice:
+        condition: service_healthy
+      ordersservice:
+        condition: service_healthy
+      shippingservice:
+        condition: service_started
+      emailservice:
+        condition: service_started
+      currencyservice:
+        condition: service_started
+      cartservice:
+        condition: service_started
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+  shippingservice:
+    build: ./src/shippingservice
+    image: shopora/shippingservice:${TAG:-1.0}
+    environment:
+      PORT: 50051
+      DISABLE_TRACING: "1"
+      DISABLE_PROFILER: "1"
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+  emailservice:
+    build: ./src/emailservice
+    image: shopora/emailservice:${TAG:-1.0}
+    environment:
+      PORT: 8080
+      DISABLE_PROFILER: "1"
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+  currencyservice:
+    build: ./src/currencyservice
+    image: shopora/currencyservice:${TAG:-1.0}
+    environment:
+      PORT: 7000
+      DISABLE_PROFILER: "1"
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+  recommendationservice:
+    build: ./src/recommendationservice
+    image: shopora/recommendationservice:${TAG:-1.0}
+    environment:
+      PORT: 8080
+      PRODUCT_CATALOG_SERVICE_ADDR: productcatalogservice:3550
+      DISABLE_PROFILER: "1"
+    depends_on:
+      productcatalogservice:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+  # ======================= website =======================
+
+  frontend:
+    build: ./src/frontend
+    image: shopora/frontend:${TAG:-1.0}
+    ports:
+      - "8080:8080"
+    depends_on:
+      gateway:
+        condition: service_healthy
+      paymentservice:
+        condition: service_healthy
+    networks:
+      - shopora-network
+    restart: unless-stopped
+
+networks:
+  shopora-network:
+
+volumes:
+  mongo-data:
+  postgres-data:
+  redis-data:
+  uploads-data:
