@@ -25,10 +25,10 @@ An online store built from small services. This repository contains the applicat
 | **frontend** (new) | Angular 20 | - | Shopora store + admin dashboard (static files) |
 | **gateway** (new) | Node.js | Redis | REST for the frontend. Talks gRPC to the original services, checks login tokens |
 | **authservice** (new) | Node.js | MongoDB, Redis | register, OTP email (nodemailer), login, logout, profile, wishlist, users (admin) |
-| **productcatalogservice** (rewritten) | Node.js | MongoDB | products and categories. gRPC with the **same contract** as before + REST for the dashboard |
-| **searchservice** (rewritten) | Node.js | MongoDB | search and suggestions. Keeps its own copy of the products, updated through Redis pub/sub |
-| **ordersservice** (rewritten) | Node.js | PostgreSQL (RDS) | orders, status history, tracking, dashboard numbers |
-| **paymentservice** (rewritten) | Node.js | Redis | test payments: a built in **mock** page, or **Stripe** in test mode |
+| **productcatalogservice** (new) | Node.js | MongoDB | products and categories. gRPC with the **same contract** as before + REST for the dashboard |
+| **searchservice** (new) | Node.js | MongoDB | search and suggestions. Keeps its own copy of the products, updated through Redis pub/sub |
+| **ordersservice** (new) | Node.js | PostgreSQL (RDS) | orders, status history, tracking, dashboard numbers |
+| **paymentservice** (new) | Node.js | Redis | test payments: a built in **mock** page, or **Stripe** in test mode |
 | cartservice | C# | Redis | cart (not changed) |
 | checkoutservice | Go | - | places the order (not changed) |
 | shippingservice | Go | - | shipping quote + tracking id (not changed) |
